@@ -31,8 +31,8 @@ public class Movement
         if (_direction != Vector3.zero)
         {
             var nextTileHit = TryGetNextTile();
-            if(nextTileHit.transform.gameObject.TryGetComponent(out Tile tile)) {
-                Tile = tile;
+            if(nextTileHit.transform != null) {
+                Tile = nextTileHit.transform.gameObject.GetComponent<Tile>();
                 _characterTransform.transform.position = Tile.Root;
                 if (_direction == _characterTransform.right)
                 {
@@ -40,6 +40,9 @@ public class Movement
                 } else if (_direction == -_characterTransform.right)
                 {
                     _characterTransform.Rotate(0, -90, 0);
+                } else if (_direction == -_characterTransform.forward)
+                {
+                    _characterTransform.Rotate(0, 180, 0);
                 }
                 _direction = Vector3.zero;
             }
