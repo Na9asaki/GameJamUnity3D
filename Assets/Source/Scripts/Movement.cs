@@ -16,8 +16,8 @@ public class Movement
 
     public void ReadKey()
     {
-        (bool, bool) moveBackForward = (Input.GetKeyDown(KeyCode.W), Input.GetKeyDown(KeyCode.S));
-        (bool, bool) moveRightLeft = (Input.GetKeyDown(KeyCode.A), Input.GetKeyDown(KeyCode.D));
+        (bool, bool) moveBackForward = (Input.GetKeyDown(ButtonMoveForward), Input.GetKeyDown(ButtonMoveBack));
+        (bool, bool) moveRightLeft = (Input.GetKeyDown(ButtonMoveLeft), Input.GetKeyDown(ButtonMoveRight));
         if (moveBackForward.Item1) _direction = _characterTransform.forward;
         else if (moveBackForward.Item2) _direction = -_characterTransform.forward;
         else if (moveRightLeft.Item1) _direction = -_characterTransform.right;
