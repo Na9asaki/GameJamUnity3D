@@ -10,7 +10,7 @@ public class Movement
     private KeyCode ButtonMoveRight;
     private KeyCode ButtonMoveLeft;
 
-    private Tile Tile { get; set; }
+    private Tile CurrentTile { get; set; }
     
     private Vector3 _direction;
 
@@ -31,19 +31,22 @@ public class Movement
         if (_direction != Vector3.zero)
         {
             var nextTileHit = TryGetNextTile();
-            if(nextTileHit.transform != null) {
-                Tile = nextTileHit.transform.gameObject.GetComponent<Tile>();
-                _characterTransform.transform.position = Tile.Root;
-                if (_direction == _characterTransform.right)
+            if(nextTileHit.transform != null)
+            {
+                var temporaryTile = nextTileHit.transform.gameObject.GetComponent<Tile>();
+                if (temporaryTile.ItemOccupied != null)
                 {
-                    _characterTransform.Rotate(0, 90, 0);
-                } else if (_direction == -_characterTransform.right)
-                {
-                    _characterTransform.Rotate(0, -90, 0);
-                } else if (_direction == -_characterTransform.forward)
-                {
-                    _characterTransform.Rotate(0, 180, 0);
+                    if (TryPushItem(temporaryTile.ItemOccupied, out temporaryTile))
+                    {
+                        CurrentTile = temporaryTile;
+                    }
                 }
+                else
+                {
+                    CurrentTile = nextTileHit.transform.gameObject.GetComponent<Tile>();
+                }
+                RotateCharacter();
+                _characterTransform.transform.position = CurrentTile.Root;
                 _direction = Vector3.zero;
             }
         }
@@ -51,7 +54,7 @@ public class Movement
 
     public void Init(Tile tile)
     {
-        Tile = tile;
+        CurrentTile = tile;
         UpdateControll();
     }
 
@@ -65,7 +68,36 @@ public class Movement
     private RaycastHit TryGetNextTile()
     {
         RaycastHit hitTarget;
-        Physics.Raycast(Tile.transform.position, _direction, out hitTarget, .7f);
+        Physics.Raycast(CurrentTile.transform.position, _direction, out hitTarget, .7f);
         return hitTarget;
+    }
+
+    private bool TryPushItem(IPlaceable item, out Tile tileBack)
+    {
+        _direction = -_direction;
+        var nextTileHit = TryGetNextTile();
+        _direction = -_direction;
+        if (nextTileHit.transform != null)
+        {   
+            item.Place(CurrentTile);
+            tileBack = nextTileHit.transform.gameObject.GetComponent<Tile>();
+            return true;
+        }
+        tileBack = null;
+        return false;
+    }
+
+    private void RotateCharacter()
+    {
+        if (_direction == _characterTransform.right)
+        {
+            _characterTransform.Rotate(0, 90, 0);
+        } else if (_direction == -_characterTransform.right)
+        {
+            _characterTransform.Rotate(0, -90, 0);
+        } else if (_direction == -_characterTransform.forward)
+        {
+            _characterTransform.Rotate(0, 180, 0);
+        }
     }
 }

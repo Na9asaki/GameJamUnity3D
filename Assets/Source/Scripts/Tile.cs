@@ -4,7 +4,8 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     public Vector3 Root { get; private set; }
-
+    public IPlaceable ItemOccupied { get; set; }
+    
     [SerializeField] private Buff _tileBuff;
 
     private void Awake()
